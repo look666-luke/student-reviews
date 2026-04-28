@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学员真实反馈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        /* 滚动区域 */
+        .scroll-section {
+            padding: 10px 0 0;
+            position: relative;
+        }
+        
+        .scroll-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .scroll-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .scroll-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .scroll-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .reviews-wrapper {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .reviews-container {
+            display: flex;
+            gap: 24px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            padding: 0 20px;
+            scrollbar-width: thin;
+            scrollbar-color: #667eea #f1f1f1;
+        }
+        
+        .reviews-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        
+        .reviews-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+        
+        .reviews-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            border: 2px solid #f1f1f1;
+        }
+        
+        .reviews-container::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(90deg, #5a6fd6 0%, #6a4190 100%);
+        }
+        
+        /* 卡片样式 */
+        .review-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 15px;
+            width: 380px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        
+        .review-meta {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .review-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-right: 10px;
+            font-weight: 500;
+        }
+        
+        .review-date {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        .review-image {
+            width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            background: #f5f5f5;
+        }
+        
+        .review-image:hover {
+            transform: scale(1.02);
+        }
+        
+        .review-label {
+            color: #667eea;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* 底部提示 */
+        .scroll-hint {
+            text-align: center;
+            padding: 5px;
+            color: #999;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .scroll-hint .arrow {
+            animation: bounce 1.5s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(5px); }
+        }
+        
+        /* 图片预览模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+            transform: rotate(90deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>学员真实反馈</h1>
+            <div class="subtitle">来自真实学员的评价与好评</div>
+        </div>
+        
+        <div class="stats-bar">
+            <div class="stat-item">
+                <div class="stat-number">💪</div>
+                <div class="stat-label">坚持就是胜利</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">🌟</div>
+                <div class="stat-label">你也可以做到</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">🚀</div>
+                <div class="stat-label">一起加油蜕变</div>
+            </div>
+        </div>
+        
+        <div class="scroll-section">
+            <div class="scroll-container">
+                <button class="scroll-btn" id="leftBtn">❮</button>
+                
+                <div class="reviews-wrapper">
+                    <div class="reviews-container" id="reviewsContainer">
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/1.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/2.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/3.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/4.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/5.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/6.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/7.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/8.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/9.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/10.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/11.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/12.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/13.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/14.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/15 (2).png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/16.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/17.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/18.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/19.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/20.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/21.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/22.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/23.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/24.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/25.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/26.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/27.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/28.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/29.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/30.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/31.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                        
+                        <div class="review-card">
+                            <div class="review-meta">
+                                <span class="review-badge">✓ 真实用户</span>
+                                <span class="review-date">2026年4月</span>
+                            </div>
+                            <img src="review-images/32.png" alt="用户评价" class="review-image" onclick="openModal(this)">
+                            <div class="review-label">💬 学员反馈截图</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="scroll-btn" id="rightBtn">❯</button>
+            </div>
+        </div>
+        
+        <div class="scroll-hint">
+            <span>← 点击箭头或拖动滚动条浏览更多评价 →</span>
+            <span class="arrow">→</span>
+        </div>
+    </div>
+    
+    <!-- 图片预览模态框 -->
+    <div class="modal" id="imageModal" onclick="closeModal()">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <img id="modalImage" src="" alt="预览图片">
+    </div>
+
+    <script>
+        const scrollAmount = 350;
+        const container = document.getElementById('reviewsContainer');
+        const leftBtn = document.getElementById('leftBtn');
+        const rightBtn = document.getElementById('rightBtn');
+        
+        // 点击左箭头
+        leftBtn.addEventListener('click', function() {
+            container.scrollLeft -= scrollAmount;
+        });
+        
+        // 点击右箭头
+        rightBtn.addEventListener('click', function() {
+            container.scrollLeft += scrollAmount;
+        });
+        
+        // 鼠标滚轮横向滚动
+        container.addEventListener('wheel', function(e) {
+            if (e.deltaY !== 0) {
+                e.preventDefault();
+                container.scrollLeft += e.deltaY;
+            }
+        });
+        
+        // 键盘事件
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            if (e.key === 'ArrowLeft') {
+                container.scrollLeft -= scrollAmount;
+            }
+            if (e.key === 'ArrowRight') {
+                container.scrollLeft += scrollAmount;
+            }
+        });
+        
+        function openModal(img) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.classList.add('active');
+            modalImg.src = img.src;
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>
